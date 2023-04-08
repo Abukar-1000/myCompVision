@@ -26,7 +26,7 @@ def main() -> None:
         # deep track, is accurate but slow
         # Tracker.siftMaxtrix(goalPostMatrix,frame)
         
-        # fast track
+        # faster tracking 
         Tracker.flannMaxtrix(goalPostMatrix, frame)
         cv2.imshow("Tracker Window", frame)
 
