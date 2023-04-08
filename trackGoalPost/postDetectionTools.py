@@ -6,7 +6,9 @@ import win32ui
 import win32con
 import pygetwindow 
 import pyautogui as pg
-class gameWindow(object):
+
+
+class GameWindow(object):
 
     def __init__(self, name, width = None, height = None) -> None:
 
@@ -75,25 +77,53 @@ class Tracker(object):
 
     @staticmethod
     def siftMaxtrix(matrix1: cv2.Mat = None, matrix2: cv2.Mat = None) -> None:
-        # matrix3 = matrix2.copy()
-
-        # make images grayscale
-        # matrix1 = cv2.cvtColor(
-        #     matrix1,
-        #     cv2.COLOR_RGB2GRAY
-        # )
-        # matrix1 = cv2.cvtColor(
-        #     matrix2,
-        #     cv2.COLOR_RGB2GRAY
-        # )
-
         # find matrix1 on matrix 2
         SIFT = cv2.SIFT_create()
         keyPoints1, descriptor1 = SIFT.detectAndCompute(matrix1, None)
         keyPoints2, descriptor2 = SIFT.detectAndCompute(matrix2, None)
         bruteForce = cv2.BFMatcher()
         matches = bruteForce.knnMatch(descriptor1, descriptor2, k = 2)
-        goodMatches = []
+
+        meanX, meanY = 0,0
+        THRESHHOLD = 0.45
+        count = 0
+
+        for match1, match2 in matches:
+
+            if match1.distance < THRESHHOLD * match2.distance:
+                count += 1
+                meanX += keyPoints2[match1.trainIdx].pt[0]
+                meanY += keyPoints2[match1.trainIdx].pt[1]
+
+        if (count):
+            meanX, meanY = int(meanX / count), int(meanY / count)
+            cv2.circle(
+                matrix2,
+                (meanX, meanY),
+                50,
+                (255,0,255),
+                2
+            )
+    
+    @staticmethod
+    def flannMaxtrix(matrix1: cv2.Mat = None, matrix2: cv2.Mat = None) -> None:
+        # find matrix1 on matrix 2
+        SIFT = cv2.SIFT_create()
+        keyPoints1, descriptor1 = SIFT.detectAndCompute(matrix1, None)
+        keyPoints2, descriptor2 = SIFT.detectAndCompute(matrix2, None)
+        FLANN_INDEX_KDTREE = 0
+
+        indexParams = {
+            "algorithm": FLANN_INDEX_KDTREE,
+            "trees": 5
+        }
+
+        searchParams = {
+            "checks": 50
+        }
+
+        FLANN = cv2.FlannBasedMatcher(indexParams, searchParams)
+        matches = FLANN.knnMatch(descriptor1, descriptor2, k = 2)
 
         meanX, meanY = 0,0
         THRESHHOLD = 0.45
@@ -116,10 +146,6 @@ class Tracker(object):
                 2
             )
 
-            # reassign pointer
-            # matrix2 = matrix3
-
-        print(count, (meanX, meanY))
     @staticmethod
     def grabScreenFrame(region: tuple = None) -> np.ndarray:
         img = pg.screenshot(region = region)

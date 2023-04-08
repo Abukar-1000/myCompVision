@@ -1,12 +1,11 @@
-import postDetectionTools as pt
+from postDetectionTools import Tracker, GameWindow
 import pygetwindow
 import cv2
 from time import sleep
 def main() -> None:
 
     fifa_window = "FIFA 23"
-    pt.getAllWindows()
-    fifaWindow = pt.gameWindow(fifa_window)
+    fifaWindow = GameWindow(fifa_window)
     # window = pygetwindow.getWindowsWithTitle(fifa_window)
     ESCKEY = 0x1B
     BITMASK = 0xFFFFFFFF
@@ -22,9 +21,13 @@ def main() -> None:
     goalPostMatrix = cv2.imread("trackGoalPost/postImgs/1.png")
 
     while 1:
-        frame = pt.Tracker.grabScreenFrame(frameRegion)
+        frame = Tracker.grabScreenFrame(frameRegion)
         
-        pt.Tracker.siftMaxtrix(goalPostMatrix,frame)
+        # deep track, is accurate but slow
+        # Tracker.siftMaxtrix(goalPostMatrix,frame)
+        
+        # fast track
+        Tracker.flannMaxtrix(goalPostMatrix, frame)
         cv2.imshow("Tracker Window", frame)
 
         if (cv2.waitKey(1) & BITMASK == ESCKEY):

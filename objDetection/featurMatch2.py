@@ -86,7 +86,6 @@ bottomRight = (-0xFFFFFFFF, -0xFFFFFFFF)
 
 # print(upperLeft, bottomRight)1
 
-meanPoint = None
 meanX, meanY = 0, 0
 THRESHHOLD = 0.45
 for match1, match2 in matches:
