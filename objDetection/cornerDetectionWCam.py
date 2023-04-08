@@ -25,8 +25,8 @@ def makeHarrisFrame(frame: np.ndarray, grayFrame: np.ndarray) -> np.ndarray:
 def myGoodFeaturesToTrack(frame: np.ndarray, grayFrame: np.ndarray):
     corners = cv2.goodFeaturesToTrack( # returns None for some odd reason
         image= grayFrame,
-        maxCorners= 10,
-        qualityLevel = 0.01,
+        maxCorners= 50,
+        qualityLevel = 0.25,
         minDistance= 2
     )
 
@@ -75,10 +75,21 @@ def myGoodFeaturesToTrack(frame: np.ndarray, grayFrame: np.ndarray):
 # cv2.imshow("Screen", frame)
 # cv2.destroyAllWindows() if ( cv2.waitKey(0) & 0xFF == 27 ) else None
 # captures screen 
-while (1):
+
+def grabScreenFrame() -> np.ndarray:
     img = pg.screenshot()
-    frame = np.asarray(img, dtype=np.uint8)
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    return np.asarray(img, dtype=np.uint8)
+    
+capture = cv2.VideoCapture(0)
+while (1):
+
+    # grabs screenshot
+    # frame = grabScreenFrame()
+
+    # grab video
+    ret, frame = capture.read()
+    frame2 = frame.copy()
+    # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     # cv2.imshow("noFilterCamera",frame)
     # makeHarrisFrame(
     #     frame,
@@ -92,6 +103,7 @@ while (1):
 
             
     cv2.imshow("Camera",frame)
+    cv2.imshow("Camera2",frame2)
     if ( cv2.waitKey(1) & 0xFF == 0x0000001B ):
         break
 cv2.destroyAllWindows()
