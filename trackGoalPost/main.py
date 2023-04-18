@@ -20,7 +20,7 @@ def main() -> None:
 
     goalPostMatrix = cv2.imread("trackGoalPost/postImgs/1.png")
 
-    while 1:
+    while True:
         frame = Tracker.grabScreenFrame(frameRegion)
         
         # deep track, is accurate but slow
